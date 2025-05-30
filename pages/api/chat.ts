@@ -1,36 +1,26 @@
-import { Message } from "@/types";
-import { OpenAIStream } from "@/utils";
-
 export const config = {
-  runtime: "edge"
+  runtime: "edge",
 };
 
-const handler = async (req: Request): Promise<Response> => {
+export default async function handler(req: Request): Promise<Response> {
   try {
-    const { messages } = (await req.json()) as {
-      messages: Message[];
-    };
+    const body = await req.json();
+    const userMessage = body.messages?.at(-1)?.content;
 
-    const charLimit = 12000;
-    let charCount = 0;
-    let messagesToSend = [];
+    const res = await fetch(process.env.N8N_WEBHOOK_URL!, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage })
+    });
 
-    for (let i = 0; i < messages.length; i++) {
-      const message = messages[i];
-      if (charCount + message.content.length > charLimit) {
-        break;
-      }
-      charCount += message.content.length;
-      messagesToSend.push(message);
-    }
+    const data = await res.json();
 
-    const stream = await OpenAIStream(messagesToSend);
-
-    return new Response(stream);
+    return new Response(
+      JSON.stringify({ role: "assistant", content: data.reply }),
+      { headers: { "Content-Type": "application/json" } }
+    );
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     return new Response("Error", { status: 500 });
   }
-};
-
-export default handler;
+}
