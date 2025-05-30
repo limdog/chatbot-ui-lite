@@ -11,15 +11,16 @@ export default async function handler(req: Request): Promise<Response> {
     url.searchParams.append("message", userMessage || "");
 
     const res = await fetch(url.toString(), { method: "GET" });
+
+    // Parse n8n response
     const data = await res.json();
+    const replyText = Array.isArray(data) ? data[0]?.reply : data.reply;
 
-    // Assume n8n returns: [ { reply: "..." } ]
-    const reply = Array.isArray(data) ? data[0]?.reply : data.reply;
-
+    // Return in Chatbot UI Lite expected format
     return new Response(
       JSON.stringify({
         role: "assistant",
-        content: reply,
+        content: replyText ?? "Sorry, I couldn't generate a reply.",
       }),
       {
         headers: { "Content-Type": "application/json" },
