@@ -19,10 +19,22 @@ export default async function handler(req: Request): Promise<Response> {
     // If n8n response is an array, unwrap first object
     const replyText = Array.isArray(data) ? data[0]?.reply : data.reply;
     
-    return new Response(
-      JSON.stringify({ reply: replyText }),
-      { headers: { "Content-Type": "application/json" } }
-    );
+    let replyText;
+    
+    if (Array.isArray(data)) {
+      replyText = data[0]?.reply;
+    } else if (typeof data.reply === "string") {
+      // Try to parse it if it's a stringified JSON object
+      try {
+        const parsed = JSON.parse(data.reply);
+        replyText = parsed.reply ?? data.reply;
+      } catch {
+        replyText = data.reply;
+      }
+    } else {
+      replyText = data.reply;
+    }
+    
 
   } catch (error) {
     console.error("Error:", error);
