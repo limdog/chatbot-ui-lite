@@ -1,17 +1,16 @@
-// next.config.js
 const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)", // apply to all routes
+        source: "/(.*)",
         headers: [
           {
             key: "X-Frame-Options",
-            value: "ALLOWALL", // or allow specific domains with CSP
+            value: "ALLOWALL"
           },
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors https://flipsideai.au/" // replace with your WordPress domain
+            value: "frame-ancestors https://flipsideai.au" // replace with your exact domain
           }
         ]
       }
