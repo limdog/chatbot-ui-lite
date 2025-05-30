@@ -15,11 +15,14 @@ export default async function handler(req: Request): Promise<Response> {
     });
 
     const data = await res.json();
-  
-  return new Response(
-    JSON.stringify({ reply: data.reply }),
-    { headers: { "Content-Type": "application/json" } }
-  );
+    
+    // If n8n response is an array, unwrap first object
+    const replyText = Array.isArray(data) ? data[0]?.reply : data.reply;
+    
+    return new Response(
+      JSON.stringify({ reply: replyText }),
+      { headers: { "Content-Type": "application/json" } }
+    );
 
   } catch (error) {
     console.error("Error:", error);
