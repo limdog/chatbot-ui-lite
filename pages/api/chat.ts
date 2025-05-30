@@ -15,11 +15,12 @@ export default async function handler(req: Request): Promise<Response> {
     });
 
     const data = await res.json();
+  
+  return new Response(
+    JSON.stringify({ reply: data.reply }),
+    { headers: { "Content-Type": "application/json" } }
+  );
 
-    return new Response(
-      JSON.stringify({ role: "assistant", content: data.reply }),
-      { headers: { "Content-Type": "application/json" } }
-    );
   } catch (error) {
     console.error("Error:", error);
     return new Response("Error", { status: 500 });
