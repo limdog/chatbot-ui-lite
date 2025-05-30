@@ -10,7 +10,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors https://flipsideai.au" // replace with your exact domain
+            value: "frame-ancestors https://flipsideai.au"
           }
         ]
       }
