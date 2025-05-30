@@ -10,22 +10,23 @@ export default async function handler(req: Request): Promise<Response> {
     const url = new URL(process.env.N8N_WEBHOOK_URL!);
     url.searchParams.append("message", userMessage || "");
 
-    const res = await fetch(url.toString(), {
-      method: "GET"
-    });
-
+    const res = await fetch(url.toString(), { method: "GET" });
     const data = await res.json();
 
-    // Extract reply from n8n response
-    const replyText = Array.isArray(data) ? data[0]?.reply : data.reply;
+    // Assume n8n returns: [ { reply: "..." } ]
+    const reply = Array.isArray(data) ? data[0]?.reply : data.reply;
 
     return new Response(
-      JSON.stringify({ role: "assistant", content: replyText }),
-      { headers: { "Content-Type": "application/json" } }
+      JSON.stringify({
+        role: "assistant",
+        content: reply,
+      }),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
-
-  } catch (error) {
-    console.error("Error:", error);
+  } catch (err) {
+    console.error("chat.ts error", err);
     return new Response("Error", { status: 500 });
   }
 }
