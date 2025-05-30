@@ -31,49 +31,21 @@ export default function Home() {
       })
     });
 
+    setLoading(false);
+
     if (!response.ok) {
-      setLoading(false);
       throw new Error(response.statusText);
     }
 
-    const data = response.body;
+    const data = await response.json();
 
-    if (!data) {
-      return;
-    }
-
-    setLoading(false);
-
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-    let isFirst = true;
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-
-      if (isFirst) {
-        isFirst = false;
-        setMessages((messages) => [
-          ...messages,
-          {
-            role: "assistant",
-            content: chunkValue
-          }
-        ]);
-      } else {
-        setMessages((messages) => {
-          const lastMessage = messages[messages.length - 1];
-          const updatedMessage = {
-            ...lastMessage,
-            content: lastMessage.content + chunkValue
-          };
-          return [...messages.slice(0, -1), updatedMessage];
-        });
+    setMessages((messages) => [
+      ...messages,
+      {
+        role: "assistant",
+        content: data.content
       }
-    }
+    ]);
   };
 
   const handleReset = () => {
