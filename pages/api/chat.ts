@@ -7,10 +7,11 @@ export default async function handler(req: Request): Promise<Response> {
     const body = await req.json();
     const userMessage = body.messages?.at(-1)?.content;
 
-    const res = await fetch(process.env.N8N_WEBHOOK_URL!, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage })
+    const url = new URL(process.env.N8N_WEBHOOK_URL!);
+    url.searchParams.append("message", userMessage || "");
+
+    const res = await fetch(url.toString(), {
+      method: "GET"
     });
 
     const data = await res.json();
