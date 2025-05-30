@@ -16,11 +16,11 @@ export default async function handler(req: Request): Promise<Response> {
 
     const data = await res.json();
 
-    // Cleanly unwrap the reply from the first item in array
+    // Extract reply from n8n response
     const replyText = Array.isArray(data) ? data[0]?.reply : data.reply;
 
     return new Response(
-      JSON.stringify({ reply: replyText }),
+      JSON.stringify({ role: "assistant", content: replyText }),
       { headers: { "Content-Type": "application/json" } }
     );
 
