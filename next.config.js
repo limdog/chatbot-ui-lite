@@ -11,7 +11,7 @@ const nextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors https://yourdomain.com" // replace with your WordPress domain
+            value: "frame-ancestors https://flipsideai.au/" // replace with your WordPress domain
           }
         ]
       }
